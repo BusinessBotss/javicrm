@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javi Crespo Dashboard V3 - Fitness CRM Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#7C3AED',
+                        accent: '#06B6D4',
+                        success: '#059669',
+                        warning: '#D97706',
+                        danger: '#DC2626',
+                        dark: '#1F2937'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-primary { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); }
+        .gradient-success { background: linear-gradient(135deg, #059669 0%, #10B981 100%); }
+        .gradient-warning { background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%); }
+        .gradient-danger { background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(79, 70, 229, 0.1);
+            transform: translateX(4px);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(79, 70, 229, 0.2);
+            border-right: 4px solid #4F46E5;
+        }
+        
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #4F46E5;
+        }
+        
+        .whatsapp-green { background: #25D366; }
+        .whatsapp-green:hover { background: #128C7E; }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #DC2626;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-online { 
+            background: #10B981; 
+            animation: pulse 2s infinite;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .calendar-cell {
+            min-height: 80px;
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-cell:hover {
+            background: rgba(79, 70, 229, 0.05);
+        }
+        
+        .class-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .class-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #4F46E5;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="glass-effect p-8 rounded-3xl shadow-2xl w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-2">JAVI CRESPO</h1>
+                <p class="text-white/80 text-lg">Fitness CRM Dashboard V3</p>
+                <p class="text-white/60 text-sm mt-2">WhatsApp Business: +34 644 075 065</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-white/90 mb-3">Contraseña de Acceso</label>
+                    <input type="password" id="passwordInput" class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-white/50 focus:border-transparent backdrop-blur-sm" placeholder="Ingresa la contraseña">
+                </div>
+                <button type="submit" class="w-full gradient-primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                        Acceder al Dashboard
+                    </span>
+                </button>
+                <div id="loginError" class="text-red-300 text-sm text-center hidden bg-red-500/20 p-3 rounded-lg">
+                    ❌ Contraseña incorrecta. Intenta nuevamente.
+                </div>
+                <div class="text-center">
+                    <p class="text-white/60 text-xs">💡 Pista: businessbots</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden min-h-screen bg-gray-50">
+        <!-- Enhanced Top Bar -->
+        <div class="fixed top-0 left-72 right-0 bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-200 z-30 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Dashboard Javi Crespo V3</h1>
+                    <p class="text-sm text-gray-600">Sistema Avanzado de Gestión Fitness</p>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <!-- Real-time notifications -->
+                    <div class="relative">
+                        <button class="p-3 text-gray-600 hover:text-primary transition-colors relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-12"></path>
+                            </svg>
+                            <div class="notification-badge">5</div>
+                        </button>
+                    </div>
+                    
+                    <!-- WhatsApp Status Enhanced -->
+                    <div class="flex items-center space-x-3 bg-green-50 px-4 py-2 rounded-full">
+                        <div class="w-3 h-3 bg-green-500 rounded-full status-online"></div>
+                        <div>
+                            <span class="text-sm font-medium text-green-700">WhatsApp API</span>
+                            <div class="text-xs text-green-600">+34 644 075 065</div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">JC</span>
+                        </div>
+                        <button onclick="logout()" class="text-gray-600 hover:text-red-500 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Sidebar -->
+        <div class="fixed left-0 top-0 h-full w-72 bg-white shadow-xl z-40 border-r border-gray-200">
+            <!-- Profile Section -->
+            <div class="p-6 border-b border-gray-200 gradient-primary">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">JC</span>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-white text-lg">Javi Crespo</h2>
+                        <p class="text-white/80 text-sm">Entrenador Personal</p>
+                        <p class="text-white/60 text-xs">Certificado NSCA</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="p-4 space-y-2">
+                <button onclick="showSection('dashboard')" class="sidebar-item active w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all">
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-medium">Dashboard</span>
+                        <div class="text-xs text-gray-500">Vista general</div>
+                    </div>
+                </button>
+                
+                <button onclick="showSection('agenda')" class="sidebar-item w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all">
+                    <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-medium">Agenda Pro</span>
+                        <div class="text-xs text-gray-500">Calendario avanzado</div>
+                    </div>
+                </button>
+                
+                <button onclick="showSection('clientes')" class="sidebar-item w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all">
+                    <div class="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-medium">CRM Clientes</span>
+                        <div class="text-xs text-gray-500">Gestión completa</div>
+                    </div>
+                </button>
+                
+                <button onclick="showSection('asistencia')" class="sidebar-item w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all">
+                    <div class="w-10 h-10 bg-warning/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-medium">Check-in</span>
+                        <div class="text-xs text-gray-500">Control asistencia</div>
+                    </div>
+                </button>
+                
+                <button onclick="showSection('precios')" class="sidebar-item w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all">
+                    <div class="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-medium">Pricing</span>
+                        <div class="text-xs text-gray-500">Planes y promociones</div>
+                    </div>
+                </button>
+                
+                <button onclick="showSection('whatsapp')" class="sidebar-item w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all relative">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-medium">WhatsApp Pro</span>
+                        <div class="text-xs text-gray-500">Difusiones masivas</div>
+                    </div>
+                    <div class="notification-badge">3</div>
+                </button>
+                
+                <button onclick="showSection('analytics')" class="sidebar-item w-full flex items-center space-x-4 px-4 py-4 rounded-xl text-left transition-all">
+                    <div class="w-10 h-10 bg-danger/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-medium">Analytics</span>
+                        <div class="text-xs text-gray-500">Métricas avanzadas</div>
+                    </div>
+                </button>
+            </nav>
+            
+            <!-- Quick Stats in Sidebar -->
+            <div class="p-4 mt-4 border-t border-gray-200">
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-600">Clientes Activos</span>
+                        <span class="font-bold text-success">94</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-600">Ocupación Hoy</span>
+                        <span class="font-bold text-primary">87%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-600">Ingresos Mes</span>
+                        <span class="font-bold text-warning">€5,240</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="ml-72 pt-24 p-6 min-h-screen">
+            <!-- Dashboard Section -->
+            <div id="dashboardSection" class="section">
+                <!-- Enhanced WhatsApp Status Banner -->
+                <div class="gradient-success text-white p-6 rounded-2xl mb-8 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold">WhatsApp Business API V3</h3>
+                                <p class="text-white/90 text-lg">+34 644 075 065 • Estado: Conectado ✓</p>
+                                <p class="text-white/70 text-sm">Última sincronización: Hace 2 minutos</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-4xl font-bold">73</div>
+                            <div class="text-white/90">Mensajes hoy</div>
+                            <div class="text-white/70 text-sm">↑ 24% vs ayer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 gradient-success rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-800">94</div>
+                                <div class="text-sm text-gray-600">Clientes Activos</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-sm">
+                                <span class="text-success font-medium">+12%</span>
+                                <span class="text-gray-500 ml-2">vs mes anterior</span>
+                            </div>
+                            <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                <div class="w-3/4 h-2 bg-success rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-800">96%</div>
+                                <div class="text-sm text-gray-600">Ocupación Semanal</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-sm">
+                                <span class="text-primary font-medium">+8%</span>
+                                <span class="text-gray-500 ml-2">vs promedio</span>
+                            </div>
+                            <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                <div class="w-full h-2 bg-primary rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 gradient-warning rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-800">€5,240</div>
+                                <div class="text-sm text-gray-600">Ingresos Mes</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-sm">
+                                <span class="text-warning font-medium">+31%</span>
+                                <span class="text-gray-500 ml-2">vs mes anterior</span>
+                            </div>
+                            <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                <div class="w-4/5 h-2 bg-warning rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 gradient-danger rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-800">97%</div>
+                                <div class="text-sm text-gray-600">Satisfacción</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-sm">
+                                <span class="text-danger font-medium">+5%</span>
+                                <span class="text-gray-500 ml-2">vs trimestre</span>
+                            </div>
+                            <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                <div class="w-full h-2 bg-danger rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Activity Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Today's Classes -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Clases de Hoy</h3>
+                            <button onclick="showSection('agenda')" class="text-primary hover:text-blue-600 text-sm font-medium">Ver todas →</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="class-card p-4 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">HIIT Matutino</h4>
+                                        <p class="text-sm text-gray-600">08:00 - 09:00 • Sede Centro</p>
+                                        <div class="flex items-center mt-2">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                            <span class="text-xs text-green-600 font-medium">Recordatorio enviado ✓</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">15/15</div>
+                                        <p class="text-xs text-red-600 mt-1 font-medium">Completo</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="class-card p-4 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Funcional Avanzado</h4>
+                                        <p class="text-sm text-gray-600">10:30 - 11:30 • Sede Norte</p>
+                                        <div class="flex items-center mt-2">
+                                            <div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                                            <span class="text-xs text-yellow-600 font-medium">Recordatorio en 1h</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">12/15</div>
+                                        <p class="text-xs text-blue-600 mt-1 font-medium">3 plazas</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="class-card p-4 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-xl">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">CrossFit Vespertino</h4>
+                                        <p class="text-sm text-gray-600">19:00 - 20:00 • Sede Centro</p>
+                                        <div class="flex items-center mt-2">
+                                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                                            <span class="text-xs text-purple-600 font-medium">Lista espera: 4</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium">18/18</div>
+                                        <p class="text-xs text-purple-600 mt-1 font-medium">Completo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp Activity -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Actividad WhatsApp</h3>
+                            <button onclick="showSection('whatsapp')" class="text-green-600 hover:text-green-700 text-sm font-medium">Ver todas →</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mt-1"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-800">Confirmación automática enviada</p>
+                                    <p class="text-xs text-gray-600">María G. • HIIT Matutino • Hace 5 min</p>
+                                </div>
+                                <span class="text-xs text-green-600 font-medium">✓✓</span>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mt-1"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-800">Recordatorio 24h programado</p>
+                                    <p class="text-xs text-gray-600">Funcional Avanzado • 15 clientes</p>
+                                </div>
+                                <span class="text-xs text-blue-600 font-medium">⏰</span>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full mt-1"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-800">Lista espera activada</p>
+                                    <p class="text-xs text-gray-600">Carlos R. notificado • CrossFit</p>
+                                </div>
+                                <span class="text-xs text-yellow-600 font-medium">📋</span>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-purple-50 rounded-lg">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full mt-1"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-800">Difusión promocional</p>
+                                    <p class="text-xs text-gray-600">94 clientes • Descuento marzo</p>
+                                </div>
+                                <span class="text-xs text-purple-600 font-medium">📢</span>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-red-50 rounded-lg">
+                                <div class="w-3 h-3 bg-red-500 rounded-full mt-1"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-800">Alerta saldo bajo</p>
+                                    <p class="text-xs text-gray-600">Ana L. • 1 crédito restante</p>
+                                </div>
+                                <span class="text-xs text-red-600 font-medium">⚠️</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Quick Actions -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Acciones Rápidas</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <button onclick="openNewClientModal()" class="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-primary hover:bg-primary/5 transition-all duration-300 group">
+                            <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Nuevo Cliente</span>
+                        </button>
+
+                        <button onclick="openNewClassModal()" class="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-accent hover:bg-accent/5 transition-all duration-300 group">
+                            <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-accent/20 transition-colors">
+                                <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Nueva Clase</span>
+                        </button>
+
+                        <button onclick="showSection('whatsapp')" class="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-300 group">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-3 group-hover:bg-green-200 transition-colors">
+                                <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">WhatsApp</span>
+                        </button>
+
+                        <button onclick="quickCheckIn()" class="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-warning hover:bg-warning/5 transition-all duration-300 group">
+                            <div class="w-12 h-12 bg-warning/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-warning/20 transition-colors">
+                                <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Check-in</span>
+                        </button>
+
+                        <button onclick="exportDashboardData()" class="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-secondary hover:bg-secondary/5 transition-all duration-300 group">
+                            <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-secondary/20 transition-colors">
+                                <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Exportar</span>
+                        </button>
+
+                        <button onclick="showSection('analytics')" class="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-danger hover:bg-danger/5 transition-all duration-300 group">
+                            <div class="w-12 h-12 bg-danger/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-danger/20 transition-colors">
+                                <svg class="w-6 h-6 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Analytics</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections would go here with similar enhanced styling -->
+            <div id="agendaSection" class="section hidden">
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Agenda Pro V3</h2>
+                    <p class="text-gray-600 mb-8">Calendario avanzado con gestión inteligente de clases</p>
+                    <button class="gradient-primary text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        Próximamente - Funcionalidad Completa
+                    </button>
+                </div>
+            </div>
+
+            <div id="clientesSection" class="section hidden">
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">CRM Clientes V3</h2>
+                    <p class="text-gray-600 mb-8">Gestión completa de clientes con IA integrada</p>
+                    <button class="gradient-success text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        Próximamente - Funcionalidad Completa
+                    </button>
+                </div>
+            </div>
+
+            <div id="asistenciaSection" class="section hidden">
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 bg-warning/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Check-in Inteligente V3</h2>
+                    <p class="text-gray-600 mb-8">Control de asistencia con reconocimiento automático</p>
+                    <button class="gradient-warning text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        Próximamente - Funcionalidad Completa
+                    </button>
+                </div>
+            </div>
+
+            <div id="preciosSection" class="section hidden">
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Pricing Dinámico V3</h2>
+                    <p class="text-gray-600 mb-8">Gestión inteligente de precios y promociones</p>
+                    <button class="gradient-secondary text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        Próximamente - Funcionalidad Completa
+                    </button>
+                </div>
+            </div>
+
+            <div id="whatsappSection" class="section hidden">
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">WhatsApp Pro V3</h2>
+                    <p class="text-gray-600 mb-8">Difusiones masivas con IA y automatización avanzada</p>
+                    <button class="whatsapp-green text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        Próximamente - Funcionalidad Completa
+                    </button>
+                </div>
+            </div>
+
+            <div id="analyticsSection" class="section hidden">
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 bg-danger/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Analytics Avanzado V3</h2>
+                    <p class="text-gray-600 mb-8">Métricas predictivas con machine learning</p>
+                    <button class="gradient-danger text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        Próximamente - Funcionalidad Completa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">Cargando...</p>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced JavaScript functionality
+        let currentSection = 'dashboard';
+        
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (password === 'businessbots') {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('mainApp').classList.remove('hidden');
+                    showWelcomeMessage();
+                }, 1500);
+            } else {
+                errorDiv.classList.remove('hidden');
+                document.getElementById('passwordInput').classList.add('border-red-500');
+                setTimeout(() => {
+                    errorDiv.classList.add('hidden');
+                    document.getElementById('passwordInput').classList.remove('border-red-500');
+                }, 3000);
+            }
+        });
+
+        // Section navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+            
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.sidebar-item').classList.add('active');
+            
+            currentSection = sectionName;
+        }
+
+        // Utility functions
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function showWelcomeMessage() {
+            // Create and show welcome notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-xl shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-semibold">¡Bienvenido Javi!</p>
+                        <p class="text-sm opacity-90">Dashboard V3 cargado correctamente</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 4000);
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    document.getElementById('mainApp').classList.add('hidden');
+                    document.getElementById('loginScreen').classList.remove('hidden');
+                    document.getElementById('passwordInput').value = '';
+                }, 1000);
+            }
+        }
+
+        // Placeholder functions for future implementation
+        function openNewClientModal() {
+            alert('🚀 Función en desarrollo - Próximamente en V3 completa');
+        }
+
+        function openNewClassModal() {
+            alert('🚀 Función en desarrollo - Próximamente en V3 completa');
+        }
+
+        function quickCheckIn() {
+            alert('🚀 Función en desarrollo - Próximamente en V3 completa');
+        }
+
+        function exportDashboardData() {
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                alert('📊 Datos exportados correctamente (simulación)');
+            }, 2000);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Javi Crespo Dashboard V3 - Inicializado correctamente');
+            console.log('📱 WhatsApp Business API: +34 644 075 065');
+            console.log('🔐 Contraseña: businessbots');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'983e0a2d91b5013f',t:'MTc1ODY3MjQyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
